@@ -40,7 +40,7 @@ class Database:
             sql = (
                 "INSERT INTO "
                 + table_name
-                + " (image_file, conv, detected_at) VALUES (%s, %s, %s)"
+                + " (image_file, conv, detected_at) VALUES (%s, %s, to_timestamp(%s))"
             )
             cursor.execute(
                 sql,
