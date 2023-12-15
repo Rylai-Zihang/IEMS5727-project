@@ -1,30 +1,47 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="bg-cover bg-center h-screen w-screen text-white p-2 flex overflow-hidden" v-if="data" :style="{ backgroundImage: `url( ${currentBg} )` }">
+    <div class="flex-1 mr-2 bg-opacity-50 bg-slate-800 p-3 flex flex-col">
+      <StackBar class="h-1/2 box-border pb-4" :data="data.deviceData" />
+      <RadarChart class="h-1/2 box-border pb-4" :data="data.riskData" />
+    </div>
+    <div class="w-2/3 mr-2 flex flex-col">
+      <!-- <TotalData class="opacity-50 bg-slate-800 p-3" :data="data.totalData" /> -->
+      <!-- <EventChart class="opacity-50 bg-slate-800 p-3 mt-2 flex-1" :data="data.mapData" /> -->
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+  <div v-else :style="{ backgroundImage: `url( ${currentBg} )` }" class="bg-cover bg-center h-screen text-white p-2 flex overflow-hidden text-6xl justify-center items-center flex-row">
+    <n-space class="flex flex-row">
+      <span>加载中请稍后</span>
+      <n-spin size="small" stroke="white" />
+      <n-spin size="small" stroke="white" />
+      <n-spin size="small" stroke="white" />
+    </n-space>
+  </div>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<script setup>
+import StackBar from "./components/StackBar.vue";
+import HeatMap from "./components/HeatMap.vue";
+import RadarChart from "./components/RadarChart.vue";
+import { NSpin, NSpace } from "naive-ui";
+
+import { provide, ref } from "vue";
+import bg from "@/assets/img/bg.jpg";
+import { getVisualization } from "./api/vis";
+
+let currentBg = ref(bg);
+provide("changeBackground", currentBg);
+
+const data = ref(null);
+const loadData = async () => {
+  data.value = await getVisualization();
+  console.log(JSON.stringify(data.value));
+};
+
+loadData();
+setInterval(() => {
+  loadData();
+}, 3000);
+</script>
+
+<style lang="scss" scoped></style>
