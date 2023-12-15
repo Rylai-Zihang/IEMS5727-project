@@ -34,7 +34,7 @@ def asyncSendFireAlarm(image_file, conf):
             response = requests.post(
                 kServerApi,
                 files={"image": open(image_file, "rb")},
-                data={"conf": conf, "timestamp": current_time},
+                data={"conf": conf, "timestamp": int(current_time)},
             )
             if response.status_code == 200:
                 print("上传成功")
