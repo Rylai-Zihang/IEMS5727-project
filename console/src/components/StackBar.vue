@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>【Alert level distribution of Devices】</div>
+    <div>【Alert Level Distribution of Devices】</div>
     <div ref="target" class="w-full h-full"></div>
   </div>
 </template>
