@@ -1,2 +1,7 @@
+console/.vite/
+console/node_modules/
+.vscode/
 fire-detect/.temp.jpg
+fire-detect/venv/
 server/__pycache__/
+fire-detect/runs/

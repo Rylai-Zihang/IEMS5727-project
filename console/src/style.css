@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+>>>>>>> origin/rylai/add-vis
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -12,6 +19,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+<<<<<<< HEAD
 
 a {
   font-weight: 500;
@@ -77,3 +85,5 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+=======
+>>>>>>> origin/rylai/add-vis
