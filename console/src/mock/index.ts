@@ -45,10 +45,12 @@ Mock.mock("/visualization", "get", {
       },
     ],
     temperatureData,
-    "totalData|5": [
+    totalData: 9999,
+    "aliveData|5": [
       {
         "device|+1": ["Device A", "Device B", "Device C", "Device D", "Device E"],
-        total_record: "@integer(1, 1000)",
+        "camera_status|+1": [0, 1],
+        "sensor_status|+1": [0, 1],
       },
     ],
   },

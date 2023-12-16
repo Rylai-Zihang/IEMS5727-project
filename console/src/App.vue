@@ -6,9 +6,9 @@
         <StackBar class="h-1/2 box-border pb-4" :data="data.deviceWarningData" />
         <RadarChart class="h-1/2 box-border" :data="data.riskData" />
       </div>
-      <div class="w-1/2 mr-2 flex flex-col opacity-50 bg-slate-800 p-3">
-        <TotalData class="h-1/3" :data="data.totalData" />
-        <Table class="h-2/3" :data="data.logData" />
+      <div class="w-1/2 mr-2 flex flex-col opacity-80 bg-slate-800 p-3">
+        <TotalData class="h-1/3" :data="data.aliveData" :total="data.totalData" />
+        <Table class="h-2/3 opacity-80" :data="data.logData" />
       </div>
       <div class="flex-1 mr-2 flex flex-col opacity-50 bg-slate-800 p-3">
         <LineChart class="h-1/2" :data="data.temperatureData" />
@@ -25,7 +25,6 @@
 
 <script setup>
 import StackBar from "./components/StackBar.vue";
-import HeatMap from "./components/HeatMap.vue";
 import RadarChart from "./components/RadarChart.vue";
 import Table from "./components/Table.vue";
 import TotalData from "./components/TotalData.vue";

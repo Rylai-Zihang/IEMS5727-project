@@ -1,14 +1,20 @@
 <template>
-  <div class="p-6">
+  <div class="pt-3 pb-3">
     <div class="text-center text-slate-300">
       Total alert:
-      <span ref="totalCountTarget" class="text-gradient font-[Electronic] text-7xl ml-2 mr-2 font-bold">{{ total }}</span>
+      <span ref="totalCountTarget" class="text-gradient text-7xl ml-2 mr-2 font-bold">{{ props.total }}</span>
       records
     </div>
     <div class="mt-3 flex flex-wrap">
-      <div v-for="item in props.data" class="w-1/3 text-center text-slate-400 text-sm">
-        <span class="font-[Electronic] text-slate-400 text-xl">{{ item["device"] + ":  " }}</span>
-        <span :ref="item['device']" class="font-[Electronic] text-[#5dc5ef] text-3xl">{{ item["total_record"] }}</span>
+      <div v-for="item in props.data" class="w-1/3 text-center text-slate-400 text-sm flex pb-3">
+        <span class="text-slate-400 text-sm w-[100px]">{{ item["device"] + ":  " }}</span>
+        <div>
+          <n-tag v-if="item['camera_status']" type="success">camera online</n-tag>
+          <n-tag v-else type="error">camera offline</n-tag>
+          <div class="p-1"></div>
+          <n-tag v-if="item['sensor_status']" type="success">sensor online</n-tag>
+          <n-tag v-else type="error">sensor offline</n-tag>
+        </div>
       </div>
     </div>
   </div>
@@ -31,6 +37,10 @@ const total = computed(() => {
 const props = defineProps({
   data: {
     type: Object,
+    required: true,
+  },
+  total: {
+    type: Number,
     required: true,
   },
 });

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>【Alert Level Distribution of Devices】</div>
+    <div>【Camera Alert Level Distribution of Devices】</div>
     <div ref="target" class="w-full h-full"></div>
   </div>
 </template>
@@ -25,11 +25,15 @@ onMounted(() => {
 });
 
 const colors = ["rgb(124, 181, 236)", "rgb(53, 106, 196)", "rgb(22, 57, 122)"];
-const levelValues = ["Low", "Medium", "High"].map((levelName) => props.data.map((item) => item.warningLevels.find((level) => level.name === levelName).value));
+const levels = ["Low", "Medium", "High"];
+const levelValues = levels.map((levelName) => props.data.map((item) => item.warningLevels.find((level) => level.name === levelName).value));
 const renderChart = () => {
   const options = {
     legend: {
-      data: ["Low", "Medium", "High"],
+      data: levels,
+    },
+    tooltip: {
+      trigger: "item",
     },
     xAxis: [
       {
@@ -52,7 +56,10 @@ const renderChart = () => {
     yAxis: [
       {
         axisLine: {
-          show: false,
+          lineStyle: {
+            color: "#22a2c3",
+            opacity: 0.8,
+          },
         },
         axisTick: {
           show: false,
@@ -67,6 +74,10 @@ const renderChart = () => {
       },
     ],
     grid: {
+      left: "3%",
+      right: "3%",
+      top: "10%",
+      bottom: "10%",
       containLabel: true,
     },
     itemStyle: {

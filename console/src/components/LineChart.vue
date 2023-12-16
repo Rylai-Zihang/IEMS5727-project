@@ -44,6 +44,16 @@ const timeData = props.data[0]?.map((item) => {
 
 const renderChart = () => {
   const options = {
+    tooltip: {
+      trigger: "item",
+    },
+    grid: {
+      left: "3%",
+      right: "3%",
+      top: "10%",
+      bottom: "10%",
+      containLabel: true,
+    },
     xAxis: {
       type: "category",
       axisLabel: {
