@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
-
-createApp(App).mount('#app')
-=======
 import { createApp } from "vue";
 import "./style.css";
 import App from "./App.vue";
@@ -14,4 +7,3 @@ import "./mock";
 const app = createApp(App);
 app.use(naive);
 app.mount("#app");
->>>>>>> origin/rylai/add-vis
