@@ -1,6 +1,15 @@
 import psycopg2
+import base64
+import random
+from collections import defaultdict
+import json
 
-table_name = "fire"
+
+
+
+
+table_name_fire = "fire"
+table_name_temperature = "temperature"
 
 
 class Database:
@@ -30,7 +39,7 @@ class Database:
             self.conn.close()
             print("Disconnected from the database")
 
-    def insert_image_data(self, image_file, conv, detected_at):
+    def insert_fire_data(self, device, image_file, conv, detected_at):
         if not self.conn:
             print("Not connected to the database")
             return
@@ -39,18 +48,132 @@ class Database:
             cursor = self.conn.cursor()
             sql = (
                 "INSERT INTO "
-                + table_name
-                + " (image_file, conv, detected_at) VALUES (%s, %s, to_timestamp(%s))"
+                + table_name_fire
+                + " (device, image_file, conv, detected_at) VALUES (%s, %s, %s, to_timestamp(%s))"
             )
             cursor.execute(
                 sql,
                 (
+                    device,
                     image_file,
                     conv,
                     detected_at,
                 ),
             )
             self.conn.commit()
-            print("Image data inserted into the database")
+            print("Fire data inserted into the database")
         except psycopg2.Error as e:
-            print("Error inserting image data into the database:", e)
+            print("Error inserting fire data into the database:", e)
+
+    def insert_temperature_data(self, device, temperature, detected_at):
+        if not self.conn:
+            print("Not connected to the database")
+            return
+
+        try:
+            cursor = self.conn.cursor()
+            sql = (
+                "INSERT INTO "
+                + table_name_temperature
+                + " (device, temperature, detected_at) VALUES (%s, %s, to_timestamp(%s))"
+            )
+            cursor.execute(
+                sql,
+                (
+                    device,
+                    temperature,
+                    detected_at,
+                ),
+            )
+            self.conn.commit()
+            print("Temperature data inserted into the database")
+        except psycopg2.Error as e:
+            print("Error inserting temperature data into the database:", e)
+
+
+    def get_recent_fires_with_images(self, num):
+        if not self.conn:
+            print("Not connected to the database")
+            return
+
+        query = f"SELECT * FROM {table_name_fire} ORDER BY detected_at DESC LIMIT %s;"
+
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(query, (num,))
+            records = cursor.fetchall()
+            fires = []
+            for record in records:
+                fire = {
+                    'device': record[1],
+                    'level': (record[3] < 0.4 if (record[3] < 0.6 if "Medium" else "High") else "Low"), 
+                    'dealt' : random.randint(1, 2) % 2 == 0,
+                    'shortcut': "data:image/png;charset=UTF-8,"+base64.b64encode(record[2].tobytes()).decode('utf-8'),
+                    'time': record[4].isoformat(),
+                }
+                fires.append(fire)
+            return fires
+        except psycopg2.Error as e:
+            print("Database error:", e)
+            return []
+
+    def get_device_warning_data(self):
+        if not self.conn:
+            print("Not connected to the database")
+            return
+
+        query = f"SELECT device, COUNT(CASE WHEN conv BETWEEN 0.2 AND 0.4 THEN 1 END) AS count_02_to_04, COUNT(CASE WHEN conv BETWEEN 0.4 AND 0.6 THEN 1 END) AS count_04_to_06, COUNT(CASE WHEN conv BETWEEN 0.6 AND 0.8 THEN 1 END) AS count_06_to_08 FROM {table_name_fire} GROUP BY device ORDER BY device;"
+
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
+            records = cursor.fetchall()
+            deviceWarningData = []
+            for record in records:
+                data = {
+                    'device': record[0],
+                    'warningLevels' :[
+                        {
+                        'name':"Low",
+                        'value':record[1],
+                        },
+                        {
+                        'name':"Medium",
+                        'value':record[2],
+                        },
+                        {
+                        'name':"High",
+                        'value':record[3],
+                        }
+                    ]
+                }
+                deviceWarningData.append(data)
+            return deviceWarningData
+        except psycopg2.Error as e:
+            print("Database error:", e)
+            return []
+
+
+    def get_recent_device_tempeature_data(self, num):
+        if not self.conn:
+            print("Not connected to the database")
+            return
+
+        query = f"WITH RankedTemperatures AS (  SELECT device, temperature, to_char(detected_at, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS') as time, ROW_NUMBER() OVER (PARTITION BY device ORDER BY detected_at DESC) as rn  FROM temperature) SELECT  device,  temperature,  time FROM  RankedTemperatures WHERE  rn <= %s ORDER BY device,  time;"
+
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(query, (num,))
+            devices_data = defaultdict(list)
+            for record in cursor.fetchall():
+                device, temperature, time = record
+                devices_data[device].append({
+                    'device': device,
+                    'temperature': temperature,
+                    'time': time
+                })
+            devices_data = dict(devices_data)
+            return list(devices_data.values())
+        except psycopg2.Error as e:
+            print("Database error:", e)
+            return []

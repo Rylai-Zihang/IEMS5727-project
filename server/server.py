@@ -1,72 +1,81 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import cgi
+from flask import Flask, request, jsonify
 from db import Database
+from keepalive import KeepAlive
 import os
+import atexit
 
-# 创建自定义的请求处理程序
-class MyRequestHandler(BaseHTTPRequestHandler):
-    # 类变量，所有实例共享同一个数据库连接
-    db = None
 
-    @classmethod
-    def setup_database(cls):
-        username = os.getenv('USER') or "defaultuser"  # 如果 USER 环境变量不存在，则使用默认用户名
-        # 初始化数据库连接
-        cls.db = Database("localhost", "5432", "iot", username, "")
-        cls.db.connect()
+app = Flask(__name__)
 
-    @classmethod
-    def teardown_database(cls):
-        # 关闭数据库连接
-        if cls.db:
-            cls.db.disconnect()
-            cls.db = None
+with app.app_context():
+    global db
+    username = os.getenv('USER')
+    db = Database("localhost", "5432", "iot", username, "")
+    db.connect()
 
-    def do_POST(self):
-        if self.path == "/upload":
-            # 解析请求的内容
-            content_type, _ = cgi.parse_header(self.headers["Content-Type"])
-            if content_type == "multipart/form-data":
-                form_data = cgi.FieldStorage(
-                    fp=self.rfile,
-                    headers=self.headers,
-                    environ={"REQUEST_METHOD": "POST"},
-                )
-                # 获取上传的图像数据
-                image_file = form_data["image"].file.read()
-                # 获取 'conf' 字段的值
-                conf_value = form_data.getvalue("conf", "")
-                # 获取 'timestamp' 字段的值
-                detected_at = form_data.getvalue("timestamp", "")
-                print(conf_value)
-                print(detected_at)
-                # 插入图像数据到数据库
-                MyRequestHandler.db.insert_image_data(image_file, conf_value, int(detected_at))
-                # 返回响应
-                self.send_response(200)
-                self.send_header("Content-type", "text/html")
-                self.end_headers()
-                self.wfile.write(bytes("Image received and processed", "utf-8"))
-            else:
-                self.send_error(400, "Invalid request")
-        else:
-            self.send_error(404, "Not found")
+    global kl
+    kl = KeepAlive()
 
-# 创建服务器实例并启动
-def run(server_class=HTTPServer, handler_class=MyRequestHandler, port=8000):
-    handler_class.setup_database()  # 设置数据库连接
-    server_address = ("", port)
-    httpd = server_class(server_address, handler_class)
-    try:
-        print(f"Starting server on port {port}")
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        handler_class.teardown_database()  # 清理数据库连接
-        httpd.server_close()
-        print("Stopping server.")
+def teardown_database():
+    global db
+    if db:
+        db.disconnect()
+        db = None
 
-# 运行服务器
-if __name__ == "__main__":
-    run()
+atexit.register(teardown_database)
+
+@app.route('/api/keepalive', methods=['POST'])
+def keepalive():
+    device = request.form.get('device', '')
+    device_type = request.form.get('type', '')
+    time = request.form.get('timestamp', '')
+    global kl
+    kl.keepalive(device, device_type, time)
+    return jsonify({'device': device, 'message': 'keepalive'}), 200
+
+
+@app.route('/api/upload/fire', methods=['POST'])
+def upload_fire():
+    if 'image' not in request.files:
+        return jsonify({'error': 'Invalid request'}), 400
+    device = request.form.get('device', '')
+    image_file = request.files['image'].read()
+    conf_value = request.form.get('conf', '')
+    detected_at = request.form.get('timestamp', '')
+    global db
+    db.insert_fire_data(device, image_file, conf_value, int(detected_at))
+    return jsonify({'message': 'fire received and processed'}), 200
+
+@app.route('/api/upload/temperature', methods=['POST'])
+def upload_temperature():
+    device = request.form.get('device', '')
+    temperature_value = request.form.get('temperature', '')
+    detected_at = request.form.get('timestamp', '')
+    global db
+    db.insert_temperature_data(device, temperature_value, int(detected_at))
+    return jsonify({'message': 'temperature received and processed'}), 200
+
+@app.route('/api/query/recent_fires/<int:num_records>', methods=['GET'])
+def query_recent_fires(num_records):
+    global db
+    recent_fires = db.get_recent_fires_with_images(num_records)
+    return jsonify(recent_fires), 200
+
+@app.route('/api/query/analyse_data', methods=['GET'])
+def query_analyse_data():
+    global db
+    log_data = db.get_recent_fires_with_images(5)
+    device_warning_data = db.get_device_warning_data()
+    temperature_data = db.get_recent_device_tempeature_data(10)
+    global kl
+    status_data = kl.get_status()
+    response = {
+        'deviceWarningData':device_warning_data,
+        'logData':log_data,
+        'temperatureData':temperature_data,
+        'aliveData':status_data,
+    }
+    return jsonify(response), 200
+
+if __name__ == '__main__':
+    app.run(debug=True, port=8000) 
