@@ -104,11 +104,15 @@ class Database:
             records = cursor.fetchall()
             fires = []
             for record in records:
+                if random.randint(1, 2) % 2 == 0:
+                    dealt_value = "true"
+                else:
+                    dealt_value = "false"
                 fire = {
                     'device': record[1],
-                    'level': (record[3] < 0.4 if (record[3] < 0.6 if "Medium" else "High") else "Low"), 
-                    'dealt' : random.randint(1, 2) % 2 == 0,
-                    'shortcut': "data:image/png;charset=UTF-8,"+base64.b64encode(record[2].tobytes()).decode('utf-8'),
+                    'shortcut': "data:image/jpg;base64,"+base64.b64encode(record[2].tobytes()).decode('utf-8'),
+                    'level': record[3] > 0.4 if (record[3] > 0.6 if "High" else "Medium") else "Low", 
+                    'dealt' : dealt_value,
                     'time': record[4].isoformat(),
                 }
                 fires.append(fire)
@@ -177,3 +181,20 @@ class Database:
         except psycopg2.Error as e:
             print("Database error:", e)
             return []
+
+
+    def get_total_fires_count(self):
+        if not self.conn:
+            print("Not connected to the database")
+            return
+
+        query = f"SELECT COUNT(*) FROM {table_name_fire};"
+
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
+            records = cursor.fetchall()
+            return records[0][0]
+        except psycopg2.Error as e:
+            print("Database error:", e)
+            return 0

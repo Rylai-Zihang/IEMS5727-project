@@ -67,13 +67,41 @@ def query_analyse_data():
     log_data = db.get_recent_fires_with_images(5)
     device_warning_data = db.get_device_warning_data()
     temperature_data = db.get_recent_device_tempeature_data(10)
+    total_data = db.get_total_fires_count()
+    risk_data = [
+        {
+          "name": "Device A",
+          "value": 78
+        },
+        {
+          "name": "Device B",
+          "value": 38
+        },
+        {
+          "name": "Device C",
+          "value": 46
+        },
+        {
+          "name": "Device D",
+          "value": 36
+        },
+        {
+          "name": "Device E",
+          "value": 89
+        }
+    ]
     global kl
     status_data = kl.get_status()
     response = {
-        'deviceWarningData':device_warning_data,
-        'logData':log_data,
-        'temperatureData':temperature_data,
-        'aliveData':status_data,
+        'status':200,
+        'data':{
+            'deviceWarningData':device_warning_data,
+            'logData':log_data,
+            'riskData':risk_data,
+            'totalData':total_data,
+            'temperatureData':temperature_data,
+            'aliveData':status_data,
+        }
     }
     return jsonify(response), 200
 

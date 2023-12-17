@@ -12,7 +12,7 @@ import threading
 
 
 if len(sys.argv) < 2:
-    print("Usage: python app.py device_name")
+    print("Usage: python camera_device.py device_name")
     sys.exit(1)
 
 # 置信度阈值
