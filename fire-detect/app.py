@@ -6,13 +6,41 @@ import shutil
 import requests
 import time
 import os
+import sys
+import threading
+
+
+
+if len(sys.argv) < 2:
+    print("Usage: python app.py device_name")
+    sys.exit(1)
 
 # 置信度阈值
 kConfThreshold = 0.2
 # 发送的最小间隔
 kMinAlarmEventIntervalInS = 10
 # 服务端接口
-kServerApi = "http://127.0.0.1:8000/upload"
+kUploadServerApi = "http://127.0.0.1:8000/api/upload/fire"
+kkeepAliveServerApi = "http://127.0.0.1:8000/api/keepalive"
+
+
+# 每隔5S发一次心跳保活包
+def keepalive():
+    while True:
+        try:
+            response = requests.post(
+                kkeepAliveServerApi,
+                data={'device': sys.argv[1], "type": 'camera', "timestamp": int(time.time())},
+            )
+            if response.status_code == 200:
+                print(response)
+        except Exception as e:
+            print("keepalive failed", e)
+        threading.Event().wait(5)
+
+
+# 启动keepalive线程
+threading.Thread(target=keepalive, daemon=True).start()
 
 
 # 记录上一次调用的时间
@@ -32,9 +60,9 @@ def asyncSendFireAlarm(image_file, conf):
     ):
         try:
             response = requests.post(
-                kServerApi,
+                kUploadServerApi,
                 files={"image": open(image_file, "rb")},
-                data={"conf": conf, "timestamp": int(current_time)},
+                data={'device': sys.argv[1], "conf": conf, "timestamp": int(current_time)},
             )
             if response.status_code == 200:
                 print("上传成功")
