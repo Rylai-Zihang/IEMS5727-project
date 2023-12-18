@@ -52,7 +52,7 @@ def upload_temperature():
     temperature_value = request.form.get('temperature', '')
     detected_at = request.form.get('timestamp', '')
     global db
-    db.insert_temperature_data(device, temperature_value, int(detected_at))
+    db.insert_temperature_data(device, round(float(temperature_value), 2), int(detected_at))
     return jsonify({'message': 'temperature received and processed'}), 200
 
 @app.route('/api/query/recent_fires/<int:num_records>', methods=['GET'])

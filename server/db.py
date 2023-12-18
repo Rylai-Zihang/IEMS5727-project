@@ -102,6 +102,7 @@ class Database:
             cursor = self.conn.cursor()
             cursor.execute(query, (num,))
             records = cursor.fetchall()
+            self.conn.commit()
             fires = []
             for record in records:
                 if random.randint(1, 2) % 2 == 0:
@@ -131,6 +132,7 @@ class Database:
         try:
             cursor = self.conn.cursor()
             cursor.execute(query)
+            self.conn.commit()
             records = cursor.fetchall()
             deviceWarningData = []
             for record in records:
@@ -168,6 +170,7 @@ class Database:
         try:
             cursor = self.conn.cursor()
             cursor.execute(query, (num,))
+            self.conn.commit()
             devices_data = defaultdict(list)
             for record in cursor.fetchall():
                 device, temperature, time = record
@@ -193,6 +196,7 @@ class Database:
         try:
             cursor = self.conn.cursor()
             cursor.execute(query)
+            self.conn.commit()
             records = cursor.fetchall()
             return records[0][0]
         except psycopg2.Error as e:
