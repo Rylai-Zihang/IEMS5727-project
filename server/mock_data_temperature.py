@@ -2,11 +2,12 @@ import psycopg2
 from psycopg2.extras import execute_values
 import random
 from datetime import datetime, timedelta
+import os
 
 # 数据库连接参数
 conn_params = {
     'dbname': 'iot',
-    'user': 'everettli',
+    'user': os.getenv('USER'),
     'password': '',
     'host': 'localhost'
 }
@@ -17,7 +18,7 @@ cur = conn.cursor()
 
 # 生成伪造数据
 num_records = 100  # 要生成的记录数
-devices = ['device1', 'device2', 'device3']
+devices = ['DeviceB', 'DeviceC', 'DeviceD', 'DeviceE']
 data = []
 
 for _ in range(num_records):
