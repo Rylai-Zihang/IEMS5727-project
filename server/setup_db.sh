@@ -10,7 +10,7 @@ DB_NAME="iot"
 DB_USER=$USER
 
 # 创建数据库
-psql -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;"
+psql -U $DB_USER -h localhost -c "CREATE DATABASE $DB_NAME;"
 
 # 构建用于创建表的SQL命令
 CREATE_TABLE_FIRE_SQL="
