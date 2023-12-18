@@ -58,9 +58,9 @@ def recv_data():
             "timestamp": int(time.time()),
         }
         try:
-            # 间隔小于10s不上报
+            # 间隔小于5s不上报
             global former_time
-            if (time.time() - former_time) >= 10:
+            if (time.time() - former_time) >= 5:
                 former_time = time.time()
                 response = requests.post(kUploadSeverApi, data=payload)
                 # 检查响应

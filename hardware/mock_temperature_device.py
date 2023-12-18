@@ -8,8 +8,8 @@ import threading
 import random
 
 
-if len(sys.argv) < 2:
-    print("Usage: python mock_temperature_device.py device_name")
+if len(sys.argv) < 3:
+    print("Usage: python mock_temperature_device.py device_name level")
     sys.exit(1)
 
 # 服务端接口
@@ -56,6 +56,15 @@ def sendTemperature(conf):
 
 # 每隔10秒随机上报一次事件
 while True:
-    random_temp = random.uniform(22.5, 25.8)
+    random_temp = 0
+    level = sys.argv[2]
+    if level == '0':
+        random_temp = random.uniform(20.0, 24.0)
+    elif level == '1':
+        random_temp = random.uniform(23.0, 26.0)
+    elif level == '2':
+        random_temp = random.uniform(29.0, 32.0)
+    elif level == '3':
+        random_temp = random.uniform(33.0, 35.0)
     sendTemperature(random_temp)
-    threading.Event().wait(10)
+    threading.Event().wait(5)
