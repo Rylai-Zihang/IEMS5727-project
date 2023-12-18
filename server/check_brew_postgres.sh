@@ -13,9 +13,7 @@ install_postgresql(){
 
     # 设置环境
     echo 'export PATH="/usr/local/opt/postgresql@15/bin:$PATH"' >> ~/.zshrc
-    echo 'export PATH="/usr/local/opt/postgresql@15/bin:$PATH"' >> ~/.bashrc
     source  ~/.zshrc
-    source  ~/.bashrc
 }
 
 running_postgres_service(){
