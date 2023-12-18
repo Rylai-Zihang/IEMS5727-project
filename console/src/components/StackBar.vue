@@ -28,6 +28,8 @@ const colors = ["rgb(124, 181, 236)", "rgb(53, 106, 196)", "rgb(22, 57, 122)"];
 const levels = ["Low", "Medium", "High"];
 const levelValues = levels.map((levelName) => props.data.map((item) => item.warningLevels.find((level) => level.name === levelName).value));
 const renderChart = () => {
+  const deviceNames = props.data.map((item) => item.device); // 获取设备名称
+  const seriesData = props.data.map((item) => item.warningLevels.map((level) => level.value)); // 获取警报级别数据
   const options = {
     legend: {
       data: levels,
@@ -50,7 +52,7 @@ const renderChart = () => {
         axisLabel: {
           color: "#22a2c3",
         },
-        data: ["Device A", "Device B", "Device C", "Device D", "Device E"],
+        data: deviceNames,
       },
     ],
     yAxis: [
@@ -83,14 +85,14 @@ const renderChart = () => {
     itemStyle: {
       borderRadius: [5, 5, 0, 0],
     },
-    series: levelValues.map((data, index) => ({
-      name: data.device,
+    series: levels.map((level, index) => ({
+      name: level,
       type: "bar",
       barGap: 0,
       emphasis: {
         focus: "series",
       },
-      data,
+      data: seriesData.map((data) => data[index]),
       itemStyle: {
         color: colors[index],
       },
