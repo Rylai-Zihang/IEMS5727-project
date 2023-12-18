@@ -9,7 +9,7 @@ import random
 
 
 if len(sys.argv) < 2:
-    print("Usage: python mock_camera_device.py device_name")
+    print("Usage: python mock_camera_device.py device_name ")
     sys.exit(1)
 
 # 服务端接口
@@ -31,14 +31,6 @@ def keepalive():
             )
             if response.status_code == 200:
                 print(response)
-            response_sensor = requests.post(
-                kkeepAliveServerApi,
-                data={
-                    "device": sys.argv[1],
-                    "type": "sensor",
-                    "timestamp": int(time.time()),
-                },
-            )
             if response_sensor.status_code == 200:
                 print(response)
         except Exception as e:

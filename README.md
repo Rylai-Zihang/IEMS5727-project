@@ -3,6 +3,7 @@
 ## step1: setup database
 ```
 cd server;
+# will drop the old database automatically.
 ./setup_db.sh
 ```
 
@@ -13,17 +14,19 @@ pip install -r requirments.txt;
 python3 server.py
 ```
 
-## step3: mock temperature data
-```
-cd server;
-python3 mock_data_temperature.py
-```
-
-## step4: start all devices
+## step3: start camera devices
 ```
 cd fire-detect;
 pip install -r requirments.txt;
-./start_all_devices.sh
+# start all camera devices
+./start_devices.sh DeviceA DeviceB DeviceC DeviceD DeviceE
+```
+
+## step4: start temperature devices
+```
+cd hardware;
+# start all temperature devices
+./start_devices.sh DeviceA DeviceB DeviceC DeviceD DeviceE
 ```
 
 ## step5: start console
@@ -33,13 +36,29 @@ yarn;
 yarn run dev;
 ```
 
-## visiting console
+## visiting console to overview the data
 http://localhost:5173/console/
 
-## step6: stop all devices
+## step6: stop selected device to test offline
 ```
 cd fire-detect;
-./stop_all_devices.sh
+./stop_devices.sh DeviceB DeviceC;
+cd hardware;
+./stop_devices.sh DeviceB DeviceC;
+# wait for 5 seconds, then we see DeviceB & DeviceC is offline
+
+cd fire-detect;
+./start_devices.sh DeviceB DeviceC;
+cd hardware;
+./start_devices.sh DeviceB DeviceC;
+# then refresh web console, we can see them are online
+
 ```
 
-
+## step7: stop all devices
+```
+cd fire-detect;
+./stop_devices.sh DeviceA DeviceB DeviceC DeviceD DeviceE;
+cd hardware;
+./stop_devices.sh DeviceA DeviceB DeviceC DeviceD DeviceE;
+```
