@@ -33,6 +33,9 @@ const renderChart = () => {
   const options = {
     legend: {
       data: levels,
+      textStyle: {
+        color: "white",
+      },
     },
     tooltip: {
       trigger: "item",
