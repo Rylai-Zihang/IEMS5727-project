@@ -5,6 +5,12 @@ import struct
 import requests
 import sys
 
+
+if len(sys.argv) < 2:
+    print("Usage: python temperature_device.py device_name")
+    sys.exit(1)
+
+
 host_ip = "192.168.8.15"
 host_port = 8080
 esp8266_ip = "192.168.8.14"
@@ -47,14 +53,14 @@ def recv_data():
         # 使用 '<f' 来指定小端字节序浮点数
         temp = struct.unpack("<f", data)[0]
         payload = {
-            "device": "Device A",
+            "device": sys.argv[1],
             "temperature": temp,
             "timestamp": int(time.time()),
         }
         try:
-            # 间隔小于1s不上报
+            # 间隔小于10s不上报
             global former_time
-            if (time.time() - former_time) >= 1:
+            if (time.time() - former_time) >= 10:
                 former_time = time.time()
                 response = requests.post(kUploadSeverApi, data=payload)
                 # 检查响应
@@ -77,7 +83,7 @@ def keepalive():
                 response = requests.post(
                     kkeepAliveServerApi,
                     data={
-                        "device": "DeviceA",
+                        "device": sys.argv[1],
                         "type": "sensor",
                         "timestamp": int(time.time()),
                     },
