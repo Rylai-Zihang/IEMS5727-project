@@ -9,6 +9,7 @@ cd server;
 ## step2: start server
 ```
 cd server;
+pip install -r requirments.txt;
 python3 server.py
 ```
 
@@ -21,6 +22,7 @@ python3 mock_data_temperature.py
 ## step4: start all devices
 ```
 cd fire-detect;
+pip install -r requirments.txt;
 ./start_all_devices.sh
 ```
 
