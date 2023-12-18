@@ -8,7 +8,6 @@ import threading
 import random
 
 
-
 if len(sys.argv) < 2:
     print("Usage: python mock_camera_device.py device_name")
     sys.exit(1)
@@ -24,9 +23,23 @@ def keepalive():
         try:
             response = requests.post(
                 kkeepAliveServerApi,
-                data={'device': sys.argv[1], "type": 'camera', "timestamp": int(time.time())},
+                data={
+                    "device": sys.argv[1],
+                    "type": "camera",
+                    "timestamp": int(time.time()),
+                },
             )
             if response.status_code == 200:
+                print(response)
+            response_sensor = requests.post(
+                kkeepAliveServerApi,
+                data={
+                    "device": sys.argv[1],
+                    "type": "sensor",
+                    "timestamp": int(time.time()),
+                },
+            )
+            if response_sensor.status_code == 200:
                 print(response)
         except Exception as e:
             print("keepalive failed", e)
@@ -42,7 +55,7 @@ def asyncSendFireAlarm(conf):
         response = requests.post(
             kUploadServerApi,
             files={"image": open(sys.argv[1] + ".jpg", "rb")},
-            data={'device': sys.argv[1], "conf": conf, "timestamp": int(time.time())},
+            data={"device": sys.argv[1], "conf": conf, "timestamp": int(time.time())},
         )
         if response.status_code == 200:
             print("上传成功")
@@ -57,4 +70,3 @@ while True:
     random_conv = random.uniform(0.2, 0.9)
     asyncSendFireAlarm(random_conv)
     threading.Event().wait(30)
-

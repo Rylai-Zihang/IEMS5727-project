@@ -15,7 +15,7 @@ const temperatureData = Array.from({ length: 5 }, (_, deviceIndex) => {
   return deviceData;
 });
 
-Mock.mock("/api/query/analyse_data", "get", {
+Mock.mock("/api/query/analyse_data/mock", "get", {
   status: 200, // 自定义状态码
   message: "请求成功", // 自定义消息
   data: {
