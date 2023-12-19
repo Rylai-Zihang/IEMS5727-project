@@ -227,20 +227,3 @@ class Database:
             print("Database error:", e)
             return 0
 
-    def get_risk_data(self):
-        if not self.conn:
-            print("Not connected to the database")
-            return
-
-        query = f"SELECT COUNT(*) FROM {table_name_fire};"
-
-        try:
-            cursor = self.conn.cursor()
-            cursor.execute(query)
-            self.conn.commit()
-            records = cursor.fetchall()
-            return records[0][0]
-        except psycopg2.Error as e:
-            print("Database error:", e)
-            return 0
-
