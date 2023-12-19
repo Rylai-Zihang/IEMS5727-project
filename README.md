@@ -10,14 +10,14 @@ cd server;
 ## step2: start server
 ```
 cd server;
-pip install -r requirments.txt;
+pip install -r requirements.txt;
 python3 server.py
 ```
 
 ## step3: start camera devices
 ```
 cd fire-detect;
-pip install -r requirments.txt;
+pip install -r requirements.txt;
 # start all camera devices
 ./start_devices.sh DeviceA DeviceB DeviceC DeviceD DeviceE
 ```
