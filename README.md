@@ -26,7 +26,10 @@ pip install -r requirements.txt;
 ```
 cd hardware;
 # start all temperature devices
-./start_devices.sh DeviceA DeviceB DeviceC DeviceD DeviceE
+# start real device
+python3 temperature_device.py DeviceA
+# start mock devices
+./start_devices.sh DeviceB DeviceC DeviceD DeviceE
 ```
 
 ## step5: start console
