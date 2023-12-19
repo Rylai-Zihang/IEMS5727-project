@@ -9,6 +9,9 @@ echo "The current user is: $USER"
 DB_NAME="iot"
 DB_USER=$USER
 
+# 删除老数据库中的全部数据，执行前需要关闭server.py
+psql -U $DB_USER -c "drop database $DB_NAME;"
+
 # 创建数据库
 psql -U $DB_USER -h localhost -c "CREATE DATABASE $DB_NAME;"
 
@@ -26,7 +29,7 @@ CREATE_TABLE_TEMPERATURE_SQL="
 CREATE TABLE temperature (
   id SERIAL PRIMARY KEY,
   device TEXT NOT NULL,
-  temperature INT NOT NULL,
+  temperature FLOAT NOT NULL,
   detected_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );"
 

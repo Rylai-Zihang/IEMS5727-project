@@ -91,6 +91,30 @@ class Database:
             print("Error inserting temperature data into the database:", e)
 
 
+    def get_recent_fires_by_device(self, num):
+        if not self.conn:
+            print("Not connected to the database")
+            return
+
+        query = f"WITH RankedFire AS (   SELECT     id,     device,     image_file,     conv,     detected_at,     ROW_NUMBER() OVER (PARTITION BY device ORDER BY detected_at DESC) AS rn   FROM     fire ) SELECT   id,   device,   image_file,   conv,   detected_at FROM   RankedFire WHERE   rn <= %s;"
+
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(query, (num,))
+            records = cursor.fetchall()
+            self.conn.commit()
+            fires = []
+            for record in records:
+                fire = {
+                    'device': record[1],
+                    'conv':  float(record[3]), 
+                }
+                fires.append(fire)
+            return fires
+        except psycopg2.Error as e:
+            print("Database error:", e)
+            return []
+
     def get_recent_fires_with_images(self, num):
         if not self.conn:
             print("Not connected to the database")
@@ -102,6 +126,7 @@ class Database:
             cursor = self.conn.cursor()
             cursor.execute(query, (num,))
             records = cursor.fetchall()
+            self.conn.commit()
             fires = []
             for record in records:
                 if random.randint(1, 2) % 2 == 0:
@@ -111,7 +136,7 @@ class Database:
                 fire = {
                     'device': record[1],
                     'shortcut': "data:image/jpg;base64,"+base64.b64encode(record[2].tobytes()).decode('utf-8'),
-                    'level': record[3] > 0.4 if (record[3] > 0.6 if "High" else "Medium") else "Low", 
+                    'level':  "Low" if float(record[3]) < 0.4 else ("Medium" if float(record[3]) < 0.6 else "High"), 
                     'dealt' : dealt_value,
                     'time': record[4].isoformat(),
                 }
@@ -131,6 +156,7 @@ class Database:
         try:
             cursor = self.conn.cursor()
             cursor.execute(query)
+            self.conn.commit()
             records = cursor.fetchall()
             deviceWarningData = []
             for record in records:
@@ -168,6 +194,7 @@ class Database:
         try:
             cursor = self.conn.cursor()
             cursor.execute(query, (num,))
+            self.conn.commit()
             devices_data = defaultdict(list)
             for record in cursor.fetchall():
                 device, temperature, time = record
@@ -193,8 +220,27 @@ class Database:
         try:
             cursor = self.conn.cursor()
             cursor.execute(query)
+            self.conn.commit()
             records = cursor.fetchall()
             return records[0][0]
         except psycopg2.Error as e:
             print("Database error:", e)
             return 0
+
+    def get_risk_data(self):
+        if not self.conn:
+            print("Not connected to the database")
+            return
+
+        query = f"SELECT COUNT(*) FROM {table_name_fire};"
+
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
+            self.conn.commit()
+            records = cursor.fetchall()
+            return records[0][0]
+        except psycopg2.Error as e:
+            print("Database error:", e)
+            return 0
+

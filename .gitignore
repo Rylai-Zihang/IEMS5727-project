@@ -6,3 +6,8 @@ fire-detect/venv/
 server/__pycache__/
 fire-detect/runs/
 deviceA.log
+deviceB.log
+deviceC.log
+deviceD.log
+deviceE.log
+hardware/__pycache__/

@@ -3,6 +3,7 @@ from db import Database
 from keepalive import KeepAlive
 import os
 import atexit
+from analysis import analysis_risk
 
 
 app = Flask(__name__)
@@ -52,7 +53,7 @@ def upload_temperature():
     temperature_value = request.form.get('temperature', '')
     detected_at = request.form.get('timestamp', '')
     global db
-    db.insert_temperature_data(device, temperature_value, int(detected_at))
+    db.insert_temperature_data(device, round(float(temperature_value), 2), int(detected_at))
     return jsonify({'message': 'temperature received and processed'}), 200
 
 @app.route('/api/query/recent_fires/<int:num_records>', methods=['GET'])
@@ -64,32 +65,12 @@ def query_recent_fires(num_records):
 @app.route('/api/query/analyse_data', methods=['GET'])
 def query_analyse_data():
     global db
-    log_data = db.get_recent_fires_with_images(5)
+    log_data = db.get_recent_fires_with_images(7)
     device_warning_data = db.get_device_warning_data()
-    temperature_data = db.get_recent_device_tempeature_data(10)
+    temperature_data = db.get_recent_device_tempeature_data(15)
     total_data = db.get_total_fires_count()
-    risk_data = [
-        {
-          "name": "Device A",
-          "value": 78
-        },
-        {
-          "name": "Device B",
-          "value": 38
-        },
-        {
-          "name": "Device C",
-          "value": 46
-        },
-        {
-          "name": "Device D",
-          "value": 36
-        },
-        {
-          "name": "Device E",
-          "value": 89
-        }
-    ]
+    risk_data= analysis_risk(db.get_recent_device_tempeature_data(2), db.get_recent_fires_by_device(2))
+
     global kl
     status_data = kl.get_status()
     response = {

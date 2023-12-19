@@ -6,13 +6,13 @@
       records
     </div>
     <div class="mt-3 flex flex-wrap">
-      <div v-for="item in props.data" class="w-1/3 text-center text-slate-400 text-sm flex pb-3">
-        <span class="text-slate-400 text-sm w-[100px]">{{ item["device"] + ":  " }}</span>
+      <div v-for="device in devices" class="w-1/3 text-center text-slate-400 text-sm flex pb-3">
+        <span class="text-slate-400 text-sm w-[100px]">{{ device + ":  " }}</span>
         <div>
-          <n-tag v-if="item['camera_status']" type="success">camera online</n-tag>
+          <n-tag v-if="props.data[device]['camera_status']" type="success">camera online</n-tag>
           <n-tag v-else type="error">camera offline</n-tag>
           <div class="p-1"></div>
-          <n-tag v-if="item['sensor_status']" type="success">sensor online</n-tag>
+          <n-tag v-if="props.data[device]['sensor_status']" type="success">sensor online</n-tag>
           <n-tag v-else type="error">sensor offline</n-tag>
         </div>
       </div>
@@ -44,6 +44,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const devices = Object.keys(props.data);
 
 watch(
   () => props.data,

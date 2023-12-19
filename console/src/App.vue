@@ -4,14 +4,14 @@
     <div class="flex flex-1" v-if="data">
       <div class="flex-1 mr-2 bg-opacity-50 bg-slate-800 p-3 flex flex-col">
         <StackBar class="h-1/2 box-border pb-4" :data="data.deviceWarningData" />
-        <RadarChart class="h-1/2 box-border" :data="data.riskData" />
+        <LineChart class="h-1/2" :data="data.temperatureData" />
       </div>
       <div class="w-1/2 mr-2 flex flex-col opacity-80 bg-slate-800 p-3">
         <TotalData class="h-1/3" :data="data.aliveData" :total="data.totalData" />
         <Table class="h-2/3 opacity-80" :data="data.logData" />
       </div>
       <div class="flex-1 mr-2 flex flex-col opacity-50 bg-slate-800 p-3">
-        <LineChart class="h-1/2" :data="data.temperatureData" />
+        <RadarChart class="h-1/2 box-border" :data="data.riskData" />
       </div>
     </div>
     <div v-else class="bg-cover bg-center h-screen text-white p-2 flex overflow-hidden text-6xl justify-center items-center flex-row">

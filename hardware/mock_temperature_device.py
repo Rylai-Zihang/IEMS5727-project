@@ -9,11 +9,11 @@ import random
 
 
 if len(sys.argv) < 3:
-    print("Usage: python mock_camera_device.py [device_name] [level]")
+    print("Usage: python mock_temperature_device.py device_name level")
     sys.exit(1)
 
 # 服务端接口
-kUploadServerApi = "http://127.0.0.1:8000/api/upload/fire"
+kUploadServerApi = "http://127.0.0.1:8000/api/upload/temperature"
 kkeepAliveServerApi = "http://127.0.0.1:8000/api/keepalive"
 
 
@@ -21,16 +21,14 @@ kkeepAliveServerApi = "http://127.0.0.1:8000/api/keepalive"
 def keepalive():
     while True:
         try:
-            response = requests.post(
+            response_sensor = requests.post(
                 kkeepAliveServerApi,
                 data={
                     "device": sys.argv[1],
-                    "type": "camera",
+                    "type": "sensor",
                     "timestamp": int(time.time()),
                 },
             )
-            if response.status_code == 200:
-                print(response)
             if response_sensor.status_code == 200:
                 print(response)
         except Exception as e:
@@ -42,12 +40,11 @@ def keepalive():
 threading.Thread(target=keepalive, daemon=True).start()
 
 
-def asyncSendFireAlarm(conf):
+def sendTemperature(conf):
     try:
         response = requests.post(
             kUploadServerApi,
-            files={"image": open(sys.argv[1] + ".jpg", "rb")},
-            data={"device": sys.argv[1], "conf": conf, "timestamp": int(time.time())},
+            data={"device": sys.argv[1], "temperature": conf, "timestamp": int(time.time())},
         )
         if response.status_code == 200:
             print("上传成功")
@@ -57,18 +54,17 @@ def asyncSendFireAlarm(conf):
         print("上传异常", e)
 
 
-# 每隔30秒随机上报一次事件
+# 每隔10秒随机上报一次事件
 while True:
-    random_conv = 0
+    random_temp = 0
     level = sys.argv[2]
     if level == '0':
-        random_conv = random.uniform(0.0, 0.3)
+        random_temp = random.uniform(20.0, 24.0)
     elif level == '1':
-        random_conv = random.uniform(0.2, 0.4)
+        random_temp = random.uniform(23.0, 26.0)
     elif level == '2':
-        random_conv = random.uniform(0.3, 0.7)
+        random_temp = random.uniform(29.0, 32.0)
     elif level == '3':
-        random_conv = random.uniform(0.4, 0.9)
-
-    asyncSendFireAlarm(random_conv)
-    threading.Event().wait(10)
+        random_temp = random.uniform(33.0, 35.0)
+    sendTemperature(random_temp)
+    threading.Event().wait(5)
