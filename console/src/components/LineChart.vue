@@ -44,6 +44,13 @@ const timeData = props.data[0]?.map((item) => {
 
 const renderChart = () => {
   const options = {
+    legend: {
+      // 添加 legend 配置
+      data: seriesData.map((series) => series.name),
+      textStyle: {
+        color: "#fff", // 设置图例文字颜色
+      },
+    },
     tooltip: {
       trigger: "item",
     },
@@ -62,6 +69,8 @@ const renderChart = () => {
       data: timeData, // Assuming props.data.categories is an array of category labels
     },
     yAxis: {
+      min: 20,
+      max: 40,
       type: "value",
       axisLine: {
         show: false,

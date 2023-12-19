@@ -23,19 +23,19 @@ def analysis_risk(temperatures, fires):
     return [
         {
           "name": "Device A",
-          "value": 78
+          "value": 28
         },
         {
           "name": "Device B",
-          "value": 38
+          "value": 20
         },
         {
           "name": "Device C",
-          "value": 46
+          "value": 41
         },
         {
           "name": "Device D",
-          "value": 36
+          "value": 57
         },
         {
           "name": "Device E",
