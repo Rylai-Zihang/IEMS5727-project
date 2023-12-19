@@ -45,13 +45,13 @@ cd fire-detect;
 ./stop_devices.sh DeviceB DeviceC;
 cd hardware;
 ./stop_devices.sh DeviceB DeviceC;
-# wait for 5 seconds, then we see DeviceB & DeviceC is offline
+# wait for 5 seconds, then we see DeviceB and DeviceC are offline
 
 cd fire-detect;
 ./start_devices.sh DeviceB DeviceC;
 cd hardware;
 ./start_devices.sh DeviceB DeviceC;
-# then refresh web console, we can see them are online
+# then refresh web console, we can see they are online
 
 ```
 
