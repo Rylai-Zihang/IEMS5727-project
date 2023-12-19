@@ -1,17 +1,17 @@
 <template>
   <div class="bg-cover bg-center h-screen w-screen text-white overflow-hidden p-5 pt-0 flex flex-col" :style="{ backgroundImage: `url( ${currentBg} )` }">
     <h1 class="text-custom text-center p-3">Fire monitoring system</h1>
-    <div class="flex flex-1" v-if="data">
+    <div class="flex flex-1 h-custom" v-if="data">
       <div class="flex-1 mr-2 bg-opacity-50 bg-slate-800 p-3 flex flex-col">
-        <StackBar class="h-1/2 box-border pb-4" :data="data.deviceWarningData" />
-        <LineChart class="h-1/2" :data="data.temperatureData" />
+        <StackBar class="flex-1 box-border pb-4" :data="data.deviceWarningData" />
+        <LineChart class="flex-1" :data="data.temperatureData" />
       </div>
       <div class="w-1/2 mr-2 flex flex-col opacity-80 bg-slate-800 p-3">
         <TotalData class="h-1/3" :data="data.aliveData" :total="data.totalData" />
         <Table class="h-2/3 opacity-80" :data="data.logData" />
       </div>
-      <div class="flex-1 mr-2 flex flex-col opacity-50 bg-slate-800 p-3">
-        <RadarChart class="h-1/2 box-border" :data="data.riskData" />
+      <div class="flex-1 h-auto mr-2 flex flex-col opacity-80 bg-slate-800 p-3">
+        <RadarChart class="box-border flex-1" :data="data.riskData" />
       </div>
     </div>
     <div v-else class="bg-cover bg-center h-screen text-white p-2 flex overflow-hidden text-6xl justify-center items-center flex-row">
@@ -41,13 +41,12 @@ provide("changeBackground", currentBg);
 const data = ref(null);
 const loadData = async () => {
   data.value = await getVisualization();
-  console.log(JSON.stringify(data.value));
 };
 
 loadData();
-// setInterval(() => {
-loadData();
-// }, 3000);
+setInterval(() => {
+  loadData();
+}, 5000);
 </script>
 
 <style lang="scss" scoped></style>
