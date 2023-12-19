@@ -61,14 +61,14 @@ def asyncSendFireAlarm(conf):
 while True:
     random_conv = 0
     level = sys.argv[2]
-    if level == '0':
+    if level == "0":
         random_conv = random.uniform(0.0, 0.3)
-    elif level == '1':
+    elif level == "1":
         random_conv = random.uniform(0.2, 0.4)
-    elif level == '2':
+    elif level == "2":
         random_conv = random.uniform(0.3, 0.7)
-    elif level == '3':
+    elif level == "3":
         random_conv = random.uniform(0.4, 0.9)
 
     asyncSendFireAlarm(random_conv)
-    threading.Event().wait(10)
+    threading.Event().wait(30)

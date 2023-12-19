@@ -1,12 +1,14 @@
 <template>
   <div>
-    <div>【Alert Log Table】</div>
-    <n-data-table :columns="columns" :data="data" :pagination="pagination" :bordered="false" />
+    <div class="pt-5 pb-3">【Alert Log Table】</div>
+    <div class="max-h-[390px] overflow-y-auto overflow-x-hidden">
+      <n-data-table :columns="columns" :data="data" :pagination="pagination" :bordered="false" />
+    </div>
   </div>
 </template>
 
 <script>
-import { h, defineComponent, defineProps } from "vue";
+import { h, defineComponent, defineProps, ref } from "vue";
 import { NImage } from "naive-ui";
 
 const createColumns = ({ showShortcut }) => [
@@ -52,14 +54,18 @@ export default defineComponent({
     },
   },
   setup(props) {
-    console.log(props.data);
+    const pagination = ref({
+      page: 1, // 当前页码
+      pageSize: 10, // 每页显示5条数据
+      itemCount: props.data.length, // 总数据项数，需要根据实际数据进行设置
+    });
     return {
       columns: createColumns({
         showShortcut(rowData) {
           console.log({ rowData });
         },
       }),
-      pagination: false,
+      pagination,
       data: props.data,
     };
   },
